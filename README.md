@@ -48,11 +48,13 @@ docker build -t code-room .
 
 ## Releases
 
-Release Please maintains a release pull request from conventional commits.
-Merging it creates a GitHub release and semantic version tag, starting with
-`v0.1.0`. The release automatically publishes public Linux AMD64 and ARM64
-images such as `0.1.0`, `0.1`, `0`, and `latest` to
-`ghcr.io/discoverivan/code-room`.
+Every push to `main` creates the next semantic version from conventional
+commits and publishes a GitHub release. Breaking changes bump the major
+version, `feat` commits bump the minor version, and all other commits bump the
+patch version. Versioning starts at `v0.1.0`.
+
+Each release automatically publishes public Linux AMD64 and ARM64 images such
+as `0.1.0`, `0.1`, `0`, and `latest` to `ghcr.io/discoverivan/code-room`.
 
 Pushing a semantic version tag manually also runs the container publishing
 workflow.
