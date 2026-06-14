@@ -16,3 +16,7 @@ export function participantColor(name: string) {
   }
   return pastelColors[Math.abs(hash) % pastelColors.length];
 }
+
+export function participantSelectionColor(name: string) {
+  return `${participantColor(name)}38`;
+}

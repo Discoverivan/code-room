@@ -5,7 +5,7 @@ import * as Y from "yjs";
 import type { Theme } from "./App";
 import { Brand, ThemeToggle } from "./components";
 import { Editor } from "./Editor";
-import { participantColor } from "./participantColor";
+import { participantColor, participantSelectionColor } from "./participantColor";
 import { normalizeRoomName, roomNameStorageKey } from "./roomIdentity";
 import { ROOM_ID_PATTERN } from "./roomInput";
 
@@ -39,7 +39,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   const connect = useCallback((currentSession: NonNullable<typeof session>, userName: string) => {
     const user = {
       color: participantColor(userName),
-      colorLight: "#ffffff",
+      colorLight: participantSelectionColor(userName),
       name: userName
     };
     currentSession.provider.connect();
@@ -158,7 +158,14 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
         <div className="room-actions">
           <div className="participants" aria-label={`${online} online`}>
             {participants.slice(0, 5).map((participant, index) => (
-              <span key={`${participant.name}-${index}`} title={participant.name} style={{ background: participant.color }}>{participant.name[0].toUpperCase()}</span>
+              <span
+                key={`${participant.name}-${index}`}
+                aria-label={participant.name}
+                data-name={participant.name}
+                style={{ background: participant.color }}
+              >
+                {participant.name[0].toUpperCase()}
+              </span>
             ))}
           </div>
           <div className="share-control">
