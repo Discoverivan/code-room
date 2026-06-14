@@ -1,0 +1,11 @@
+services:
+  code-room:
+    image: ghcr.io/discoverivan/code-room:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - code-room-data:/data
+
+volumes:
+  code-room-data:

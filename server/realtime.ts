@@ -16,18 +16,6 @@ type ActiveRoom = {
   saveTimer?: NodeJS.Timeout;
 };
 
-function readAwarenessClientIds(update: Uint8Array) {
-  const decoder = decoding.createDecoder(update);
-  const count = decoding.readVarUint(decoder);
-  const ids: number[] = [];
-  for (let index = 0; index < count; index += 1) {
-    ids.push(decoding.readVarUint(decoder));
-    decoding.readVarUint(decoder);
-    decoding.readVarString(decoder);
-  }
-  return ids;
-}
-
 export function createRealtimeServer(store: RoomStore) {
   const rooms = new Map<string, ActiveRoom>();
 
@@ -41,6 +29,7 @@ export function createRealtimeServer(store: RoomStore) {
       awareness: new awarenessProtocol.Awareness(document),
       clients: new Map()
     };
+    room.awareness.setLocalState(null);
     const broadcast = (message: Uint8Array) => {
       for (const client of room!.clients.keys()) {
         if (client.readyState === client.OPEN) client.send(message);
@@ -54,8 +43,16 @@ export function createRealtimeServer(store: RoomStore) {
       clearTimeout(room!.saveTimer);
       room!.saveTimer = setTimeout(() => store.save(id, document), 500);
     });
-    room.awareness.on("update", ({ added, updated, removed }: { added: number[]; updated: number[]; removed: number[] }) => {
+    room.awareness.on("update", (
+      { added, updated, removed }: { added: number[]; updated: number[]; removed: number[] },
+      origin: WebSocket | null
+    ) => {
       const changed = added.concat(updated, removed);
+      if (origin) {
+        const controlledIds = room!.clients.get(origin);
+        added.forEach((id) => controlledIds?.add(id));
+        removed.forEach((id) => controlledIds?.delete(id));
+      }
       const encoder = encoding.createEncoder();
       encoding.writeVarUint(encoder, messageAwareness);
       encoding.writeVarUint8Array(
@@ -102,7 +99,6 @@ export function createRealtimeServer(store: RoomStore) {
           if (encoding.length(reply) > 1) socket.send(encoding.toUint8Array(reply));
         } else if (type === messageAwareness) {
           const update = decoding.readVarUint8Array(decoder);
-          room.clients.set(socket, new Set(readAwarenessClientIds(update)));
           awarenessProtocol.applyAwarenessUpdate(room.awareness, update, socket);
         }
       });

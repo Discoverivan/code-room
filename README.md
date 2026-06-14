@@ -1,16 +1,21 @@
-# Code Room
+# code room
+
+[![CI](https://github.com/Discoverivan/code-room/actions/workflows/ci.yml/badge.svg)](https://github.com/Discoverivan/code-room/actions/workflows/ci.yml)
+[![Container](https://img.shields.io/badge/ghcr.io-code--room-7166f4?logo=docker&logoColor=white)](https://github.com/Discoverivan/code-room/pkgs/container/code-room)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Create a room. Share a link. Start typing.
 
-Code Room is a minimal self-hosted real-time collaborative text editor. It has
-no accounts, projects, formatting, syntax highlighting, chat, or external
-services.
+`code room` is a minimal self-hosted collaborative editor for running your own
+real-time writing or live-coding site. It requires no accounts, external
+database, or third-party services.
 
-## Run
+## Quick start
 
 ```bash
 docker run -d \
   --name code-room \
+  --restart unless-stopped \
   -p 8080:8080 \
   -v code-room-data:/data \
   ghcr.io/discoverivan/code-room:latest
@@ -18,13 +23,37 @@ docker run -d \
 
 Open [http://localhost:8080](http://localhost:8080).
 
+## Docker Compose
+
+```yaml
+services:
+  code-room:
+    image: ghcr.io/discoverivan/code-room:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - code-room-data:/data
+
+volumes:
+  code-room-data:
+```
+
+The same configuration is available in [`compose.yaml`](compose.yaml):
+
+```bash
+docker compose up -d
+```
+
 ## Configuration
 
 | Variable | Default | Description |
 | --- | --- | --- |
 | `PORT` | `8080` | HTTP and WebSocket port |
-| `DATA_DIR` | `/data` | Directory containing the SQLite database |
-| `ROOM_TTL_DAYS` | `30` | Days of inactivity before a room is removed |
+| `DATA_DIR` | `/data` | SQLite storage directory |
+| `ROOM_TTL_DAYS` | `30` | Delete rooms after this many inactive days |
+
+Persist `/data` in production. Room links act as the access secret.
 
 ## Development
 
@@ -35,30 +64,22 @@ npm ci
 npm run dev
 ```
 
-The client runs on `http://localhost:5173` and proxies API/WebSocket requests
-to the server on port `8080`.
+The web app runs at `http://localhost:5173`; the API and WebSocket server run
+at `http://localhost:8080`.
 
 ```bash
 npm run lint
 npm run typecheck
 npm test
 npm run build
-docker build -t code-room .
 ```
 
-## Releases
+## Contributing
 
-Every push to `main` creates the next semantic version from conventional
-commits and publishes a GitHub release. Breaking changes bump the major
-version, `feat` commits bump the minor version, and all other commits bump the
-patch version. Versioning starts at `v0.1.0`.
-
-Each release automatically publishes public Linux AMD64 and ARM64 images such
-as `0.1.0`, `0.1`, `0`, and `latest` to `ghcr.io/discoverivan/code-room`.
-
-Pushing a semantic version tag manually also runs the container publishing
-workflow.
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md)
+before submitting a change. Report security issues according to
+[SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT
+[MIT](LICENSE)

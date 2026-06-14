@@ -1,7 +1,23 @@
 {
   "name": "code-room",
   "version": "0.1.0",
+  "description": "A minimal self-hosted real-time collaborative editor.",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Discoverivan/code-room.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Discoverivan/code-room/issues"
+  },
+  "homepage": "https://github.com/Discoverivan/code-room#readme",
+  "keywords": [
+    "collaboration",
+    "editor",
+    "self-hosted",
+    "yjs"
+  ],
   "type": "module",
   "engines": {
     "node": ">=22"

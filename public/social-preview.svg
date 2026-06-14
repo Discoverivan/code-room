@@ -1,0 +1,29 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="background" x1="50" y1="30" x2="1140" y2="610" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBFCFF"/>
+      <stop offset=".6" stop-color="#F6F7FF"/>
+      <stop offset="1" stop-color="#E8EEFF"/>
+    </linearGradient>
+    <linearGradient id="icon" x1="430" y1="120" x2="770" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A96AFF"/>
+      <stop offset=".5" stop-color="#7166F4"/>
+      <stop offset="1" stop-color="#4F8DFF"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="24" stdDeviation="25" flood-color="#555AC4" flood-opacity=".28"/>
+    </filter>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#6F75A8" opacity=".12"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#background)"/>
+  <rect width="1200" height="630" rx="32" fill="url(#dots)"/>
+  <circle cx="1060" cy="560" r="250" fill="#6E91FF" opacity=".12"/>
+  <circle cx="120" cy="70" r="210" fill="#A56EFF" opacity=".08"/>
+  <rect x="486" y="76" width="228" height="228" rx="62" fill="url(#icon)" filter="url(#shadow)"/>
+  <path d="M582 139H555C542.297 139 532 149.297 532 162V218C532 230.703 542.297 241 555 241H582" stroke="white" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M618 139H645C657.703 139 668 149.297 668 162V218C668 230.703 657.703 241 645 241H618" stroke="white" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="600" y="402" text-anchor="middle" fill="#171A25" font-family="Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="-4">code room</text>
+  <text x="600" y="466" text-anchor="middle" fill="#6F7789" font-family="Arial, sans-serif" font-size="28">Create a room. Share a link. Start typing.</text>
+</svg>

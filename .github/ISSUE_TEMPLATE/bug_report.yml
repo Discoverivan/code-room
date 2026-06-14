@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible problem
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include private room links or document contents.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Container tag, release, or commit SHA
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and operating system
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: shell

@@ -49,14 +49,19 @@ describe("real-time collaboration", () => {
     const secondProvider = new WebsocketProvider(url, id, second, { WebSocketPolyfill: WebSocket, connect: false });
     firstProvider.connect();
     secondProvider.connect();
-    firstProvider.awareness.setLocalStateField("user", { color: "#111111" });
-    secondProvider.awareness.setLocalStateField("user", { color: "#222222" });
+    firstProvider.awareness.setLocalStateField("user", { name: "Ivan", color: "#111111" });
+    secondProvider.awareness.setLocalStateField("user", { name: "Anya", color: "#222222" });
 
     await waitFor(() => firstProvider.wsconnected && secondProvider.wsconnected);
     await waitFor(
       () => firstProvider.awareness.getStates().size === 2 && secondProvider.awareness.getStates().size === 2
     );
     expect(firstProvider.awareness.getStates().size).toBe(2);
+    expect(
+      [...firstProvider.awareness.getStates().values()]
+        .map((state) => state.user?.name)
+        .sort()
+    ).toEqual(["Anya", "Ivan"]);
     first.getText("content").insert(0, "shared text");
     await waitFor(() => second.getText("content").toString() === "shared text");
 

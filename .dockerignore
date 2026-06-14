@@ -1,9 +1,12 @@
-node_modules
-dist
-server-dist
-.data
 .git
 .github
+.data
 coverage
+dist
+server-dist
+node_modules
 *.db
-*.log
+*.db-shm
+*.db-wal
+.DS_Store
+.env
