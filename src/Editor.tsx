@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { type CSSProperties, useEffect, useRef } from "react";
 import { EditorState } from "@codemirror/state";
 import { drawSelection, EditorView, highlightActiveLine, keymap, lineNumbers } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
@@ -13,11 +13,15 @@ export function Editor({
   document,
   provider,
   theme,
+  localCursorColor,
+  showRemoteNames,
   onCursor
 }: {
   document: Y.Doc;
   provider: WebsocketProvider;
   theme: Theme;
+  localCursorColor: string;
+  showRemoteNames: boolean;
   onCursor: (position: CursorPosition) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
@@ -48,5 +52,11 @@ export function Editor({
     return () => view.destroy();
   }, [document, provider, theme, onCursor]);
 
-  return <div className="editor" ref={container} />;
+  return (
+    <div
+      className={`editor${showRemoteNames ? " remote-cursor-names" : ""}`}
+      ref={container}
+      style={{ "--local-cursor": localCursorColor } as CSSProperties}
+    />
+  );
 }

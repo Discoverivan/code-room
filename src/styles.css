@@ -51,9 +51,10 @@ button:disabled { cursor: wait; opacity: .6; }
   border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 5px 18px rgba(44, 55, 87, .05);
 }
 .icon-button { width: 48px; }
-.theme-icon { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-icon, .settings-icon { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .sun-icon { width: 24px; height: 24px; }
 .moon-icon { width: 20px; height: 20px; }
+.settings-icon { width: 21px; height: 21px; }
 .github-button { padding: 0 17px; gap: 8px; text-decoration: none; font-weight: 650; }
 .github-button img { width: 18px; height: 18px; }
 [data-theme="dark"] .github-button img { filter: invert(1); }
@@ -122,12 +123,12 @@ button:disabled { cursor: wait; opacity: .6; }
 .participants span:hover { z-index: 31; }
 .participants span:hover::before { opacity: 1; transform: translate(-50%, 0) scale(1); }
 .participants span:hover::after { opacity: 1; }
-.share-control { position: relative; }
+.share-control, .settings-control { position: relative; }
 .copy-button { height: 44px; padding: 0 23px; border: 0; border-radius: 11px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: white; font-weight: 650; font-size: 15px; }
 .editor { min-height: 0; overflow: auto; background: var(--surface); }
 .cm-editor { height: 100%; background: var(--surface); color: var(--text); font: 16px/1.75 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 .cm-editor.cm-focused { outline: none; }
-.cm-cursor, .cm-dropCursor { border-left-color: var(--cursor) !important; }
+.cm-cursor, .cm-dropCursor { border-left: 2px solid var(--local-cursor, var(--cursor)) !important; margin-left: -1px !important; }
 .cm-scroller { padding: 28px 14px 100px; }
 .cm-gutters {
   margin-top: -28px; padding: 28px 14px 0 8px;
@@ -141,7 +142,12 @@ button:disabled { cursor: wait; opacity: .6; }
   border-left-width: 2px !important; border-right: 0 !important; margin: 0 -1px 0 0 !important;
 }
 .cm-ySelection, .cm-yLineSelection { border-radius: 3px; }
-.cm-ySelectionInfo { padding: 4px 8px !important; border-radius: 5px !important; font: 600 11px/1.2 Inter, sans-serif !important; color: white !important; transform: translateY(-3px); }
+.cm-ySelectionInfo {
+  max-width: 160px; overflow: hidden; padding: 4px 8px !important; border-radius: 5px !important;
+  font: 600 11px/1.2 Inter, sans-serif !important; color: white !important; text-overflow: ellipsis;
+  pointer-events: none; transform: translateY(-3px);
+}
+.remote-cursor-names .cm-ySelectionInfo { opacity: 1 !important; }
 .statusbar { display: flex; align-items: center; gap: 24px; padding: 0 18px; border-top: 1px solid var(--border); color: var(--muted); background: var(--surface); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .statusbar span:nth-child(2) { margin-left: auto; }
 .connection::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #d1953b; }
@@ -153,14 +159,25 @@ button:disabled { cursor: wait; opacity: .6; }
   transform-origin: top right; animation: share-popover-in 160ms ease-out;
 }
 .share-popover::before { content: ""; position: absolute; top: -6px; right: 34px; width: 11px; height: 11px; border-left: 1px solid var(--border); border-top: 1px solid var(--border); background: var(--surface); transform: rotate(45deg); }
-.share-popover h2 { margin: 0 0 5px; font-family: Manrope, ui-sans-serif, system-ui, sans-serif; font-size: 17px; letter-spacing: -.025em; }
-.share-popover p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.share-popover h2, .settings-popover h2 { margin: 0 0 5px; font-family: Manrope, ui-sans-serif, system-ui, sans-serif; font-size: 17px; letter-spacing: -.025em; }
+.share-popover p, .settings-popover p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
 .share-value { display: flex; gap: 7px; }
 .share-value input { min-width: 0; flex: 1; height: 40px; border: 1px solid var(--border); border-radius: 9px; padding: 0 11px; background: var(--surface-soft); color: var(--text); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; outline: none; }
 .share-value input:focus { border-color: #7779ef; box-shadow: 0 0 0 3px rgba(99, 102, 241, .12); }
 .share-value button { flex: none; min-width: 68px; border: 0; border-radius: 9px; padding: 0 12px; background: var(--accent); color: white; font-weight: 650; }
 .share-popover small { display: flex; align-items: center; gap: 6px; min-height: 16px; margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .share-popover small svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.settings-popover {
+  position: absolute; z-index: 20; top: calc(100% + 12px); right: 0; width: 280px; padding: 18px;
+  border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 20px 55px rgba(15, 20, 35, .2);
+  transform-origin: top right; animation: share-popover-in 160ms ease-out;
+}
+.settings-popover label { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
+.settings-popover label:hover { background: var(--surface-soft); }
+.settings-popover input { margin-top: 3px; accent-color: var(--accent); }
+.settings-popover span { display: flex; flex-direction: column; gap: 2px; }
+.settings-popover strong { font-size: 13px; }
+.settings-popover small { color: var(--muted); font-size: 11px; }
 @keyframes share-popover-in { from { opacity: 0; transform: translateY(-5px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .center-state { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 30px; }
 .center-state h1 { margin: 24px 0 0; letter-spacing: -.04em; }
@@ -180,5 +197,6 @@ button:disabled { cursor: wait; opacity: .6; }
   .participants span { width: 32px; height: 32px; }
   .share-popover { position: fixed; top: 70px; right: 10px; left: 10px; width: auto; transform-origin: top center; }
   .share-popover::before { right: 76px; }
+  .settings-popover { position: fixed; top: 70px; right: 10px; left: 10px; width: auto; transform-origin: top center; }
   .statusbar { gap: 12px; padding: 0 10px; }
 }
