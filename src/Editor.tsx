@@ -48,8 +48,40 @@ export function Editor({
       ]
     });
     const view = new EditorView({ state, parent: container.current });
+    let hoveredRemoteCaret: Element | null = null;
+    const updateHoveredRemoteLabel = (event: MouseEvent) => {
+      if (!container.current?.classList.contains("remote-cursor-names")) {
+        hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
+        hoveredRemoteCaret = null;
+        return;
+      }
+      const hoverPadding = 10;
+      const labels = view.dom.querySelectorAll(".cm-ySelectionInfo");
+      const label = [...labels].find((element) => {
+        const rect = element.getBoundingClientRect();
+        return event.clientX >= rect.left - hoverPadding &&
+          event.clientX <= rect.right + hoverPadding &&
+          event.clientY >= rect.top - hoverPadding &&
+          event.clientY <= rect.bottom + hoverPadding;
+      });
+      const caret = label?.closest(".cm-ySelectionCaret") ?? null;
+      if (caret === hoveredRemoteCaret) return;
+      hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
+      caret?.classList.add("remote-cursor-label-hover");
+      hoveredRemoteCaret = caret;
+    };
+    const clearHoveredRemoteLabel = () => {
+      hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
+      hoveredRemoteCaret = null;
+    };
+    view.dom.addEventListener("mousemove", updateHoveredRemoteLabel);
+    view.dom.addEventListener("mouseleave", clearHoveredRemoteLabel);
     onCursor({ line: 1, column: 1 });
-    return () => view.destroy();
+    return () => {
+      view.dom.removeEventListener("mousemove", updateHoveredRemoteLabel);
+      view.dom.removeEventListener("mouseleave", clearHoveredRemoteLabel);
+      view.destroy();
+    };
   }, [document, provider, theme, onCursor]);
 
   return (

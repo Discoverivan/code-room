@@ -6,6 +6,7 @@ import WebSocket from "ws";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import { buildApp } from "./app.js";
+import { MAX_ROOM_PARTICIPANTS } from "./realtime.js";
 
 const directories: string[] = [];
 function dataDir() {
@@ -109,6 +110,28 @@ describe("real-time collaboration", () => {
     secondProvider.destroy();
     first.destroy();
     second.destroy();
+    await app.close();
+  });
+
+  it("limits rooms to the available participant colors", async () => {
+    const app = await buildApp({ dataDir: dataDir() });
+    await app.listen({ port: 0, host: "127.0.0.1" });
+    const address = app.server.address();
+    if (!address || typeof address === "string") throw new Error("Missing server address");
+    const created = await app.inject({ method: "POST", url: "/api/rooms" });
+    const { id } = created.json<{ id: string }>();
+    const url = `ws://127.0.0.1:${address.port}/ws/${id}`;
+    const sockets = Array.from({ length: MAX_ROOM_PARTICIPANTS }, () => new WebSocket(url));
+
+    await Promise.all(sockets.map((socket) => new Promise<void>((resolve) => socket.once("open", resolve))));
+    const extra = new WebSocket(url);
+    const closed = new Promise<{ code: number; reason: string }>((resolve) => {
+      extra.once("close", (code, reason) => resolve({ code, reason: reason.toString() }));
+    });
+
+    await expect(closed).resolves.toEqual({ code: 1013, reason: "Room is full" });
+
+    sockets.forEach((socket) => socket.close());
     await app.close();
   });
 });

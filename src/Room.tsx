@@ -5,11 +5,11 @@ import * as Y from "yjs";
 import type { Theme } from "./App";
 import { Brand, ThemeToggle } from "./components";
 import { Editor } from "./Editor";
-import { participantColor, participantSelectionColor } from "./participantColor";
+import { assignedParticipantColors, participantColor, participantSelectionColor } from "./participantColor";
 import { normalizeRoomName, roomNameStorageKey } from "./roomIdentity";
 import { ROOM_ID_PATTERN } from "./roomInput";
 
-type Participant = { name: string; color: string };
+type Participant = { id: number; name: string; color: string };
 type RemoteCursorDisplay = "dot" | "name";
 
 const REMOTE_CURSOR_DISPLAY_KEY = "code-room-remote-cursor-display";
@@ -23,6 +23,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   const navigate = useNavigate();
   const savedName = normalizeRoomName(localStorage.getItem(roomNameStorageKey(id)));
   const [exists, setExists] = useState<boolean | null>(null);
+  const [roomFull, setRoomFull] = useState(false);
   const [connection, setConnection] = useState("Connecting");
   const [online, setOnline] = useState(1);
   const [chars, setChars] = useState(0);
@@ -46,14 +47,15 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   }, [id]);
 
   const connect = useCallback((currentSession: NonNullable<typeof session>, userName: string) => {
+    const color = participantColor(0);
     const user = {
-      color: participantColor(userName),
-      colorLight: participantSelectionColor(userName),
+      color,
+      colorLight: participantSelectionColor(color),
       name: userName
     };
     currentSession.provider.connect();
     currentSession.provider.awareness.setLocalStateField("user", user);
-    setParticipants([user]);
+    setParticipants([{ id: currentSession.document.clientID, ...user }]);
     setOnline(1);
   }, []);
 
@@ -78,21 +80,46 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
     if (!session) return;
     const updateConnection = ({ status }: { status: string }) =>
       setConnection(status === "connected" ? "Connected" : status === "connecting" ? "Connecting" : "Disconnected");
+    const updateClose = (event: CloseEvent | null) => {
+      if (event?.code === 1013 && event.reason === "Room is full") {
+        session.provider.disconnect();
+        setRoomFull(true);
+      }
+    };
     const updateOnline = () => {
-      const users = [...session.provider.awareness.getStates().values()]
-        .map((state) => state.user as Participant | undefined)
-        .filter((user): user is Participant => Boolean(user?.name));
+      const states = [...session.provider.awareness.getStates().entries()]
+        .filter((entry): entry is [number, { user: { name: string; color?: string } }] => Boolean(entry[1].user?.name));
+      const colors = assignedParticipantColors(states.map(([clientId, state]) => ({
+        id: clientId,
+        color: state.user.color
+      })));
+      const users = states.map(([clientId, state]) => ({
+        id: clientId,
+        name: state.user.name,
+        color: colors.get(clientId)!
+      }));
+      const local = users.find((user) => user.id === session.document.clientID);
+      const localState = session.provider.awareness.getLocalState();
+      if (local && localState?.user?.color !== local.color) {
+        session.provider.awareness.setLocalStateField("user", {
+          ...localState?.user,
+          color: local.color,
+          colorLight: participantSelectionColor(local.color)
+        });
+      }
       setParticipants(users);
       setOnline(users.length);
     };
     const updateChars = () => setChars(session.document.getText("content").length);
     session.provider.on("status", updateConnection);
+    session.provider.on("connection-close", updateClose);
     session.provider.awareness.on("change", updateOnline);
     session.document.getText("content").observe(updateChars);
     updateOnline();
     updateChars();
     return () => {
       session.provider.off("status", updateConnection);
+      session.provider.off("connection-close", updateClose);
       session.provider.awareness.off("change", updateOnline);
       session.document.getText("content").unobserve(updateChars);
     };
@@ -152,6 +179,16 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
       </main>
     );
   }
+  if (roomFull) {
+    return (
+      <main className="center-state">
+        <Brand />
+        <h1>Room is full</h1>
+        <p>This room already has the maximum of 10 participants.</p>
+        <button className="primary-button" onClick={() => navigate("/")}>Back to home</button>
+      </main>
+    );
+  }
   if (!name) {
     return (
       <main className="name-screen">
@@ -177,9 +214,9 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
         <span className="room-id">{id}</span>
         <div className="room-actions">
           <div className="participants" aria-label={`${online} online`}>
-            {participants.slice(0, 5).map((participant, index) => (
+            {participants.slice(0, 5).map((participant) => (
               <span
-                key={`${participant.name}-${index}`}
+                key={participant.id}
                 aria-label={participant.name}
                 data-name={participant.name}
                 style={{ background: participant.color }}
@@ -243,7 +280,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
         document={session.document}
         provider={session.provider}
         theme={theme}
-        localCursorColor={participantColor(name)}
+        localCursorColor={participants.find((participant) => participant.id === session.document.clientID)?.color ?? participantColor(0)}
         showRemoteNames={remoteCursorDisplay === "name"}
         onCursor={updateCursor}
       />

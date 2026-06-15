@@ -8,6 +8,7 @@ import type { RoomStore } from "./rooms.js";
 
 const messageSync = 0;
 const messageAwareness = 1;
+export const MAX_ROOM_PARTICIPANTS = 10;
 
 type ActiveRoom = {
   document: Y.Doc;
@@ -70,6 +71,10 @@ export function createRealtimeServer(store: RoomStore) {
       const room = getRoom(id);
       if (!room) {
         socket.close(1008, "Room not found");
+        return;
+      }
+      if (room.clients.size >= MAX_ROOM_PARTICIPANTS) {
+        socket.close(1013, "Room is full");
         return;
       }
       store.touch(id);

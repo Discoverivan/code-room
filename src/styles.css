@@ -148,7 +148,9 @@ button:disabled { cursor: wait; opacity: .6; }
   pointer-events: none; transform: translateY(-3px);
 }
 .remote-cursor-names .cm-ySelectionCaretDot { display: none; }
-.remote-cursor-names .cm-ySelectionInfo { opacity: 1 !important; }
+.remote-cursor-names .cm-ySelectionInfo { opacity: 1 !important; transition: opacity 140ms ease-out; }
+.remote-cursor-names .cm-ySelectionCaret:hover > .cm-ySelectionInfo,
+.remote-cursor-names .remote-cursor-label-hover > .cm-ySelectionInfo { opacity: .28 !important; }
 .statusbar { display: flex; align-items: center; gap: 24px; padding: 0 18px; border-top: 1px solid var(--border); color: var(--muted); background: var(--surface); font: 11px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .statusbar span:nth-child(2) { margin-left: auto; }
 .connection::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #d1953b; }
