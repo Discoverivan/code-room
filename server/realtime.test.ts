@@ -71,4 +71,44 @@ describe("real-time collaboration", () => {
     second.destroy();
     await app.close();
   });
+
+  it("keeps an awareness cursor at the same character after concurrent edits", async () => {
+    const app = await buildApp({ dataDir: dataDir() });
+    await app.listen({ port: 0, host: "127.0.0.1" });
+    const address = app.server.address();
+    if (!address || typeof address === "string") throw new Error("Missing server address");
+    const created = await app.inject({ method: "POST", url: "/api/rooms" });
+    const { id } = created.json<{ id: string }>();
+
+    const first = new Y.Doc();
+    const second = new Y.Doc();
+    const url = `ws://127.0.0.1:${address.port}/ws`;
+    const firstProvider = new WebsocketProvider(url, id, first, { WebSocketPolyfill: WebSocket, connect: false });
+    const secondProvider = new WebsocketProvider(url, id, second, { WebSocketPolyfill: WebSocket, connect: false });
+    firstProvider.connect();
+    secondProvider.connect();
+
+    await waitFor(() => firstProvider.wsconnected && secondProvider.wsconnected);
+    first.getText("content").insert(0, "hello world");
+    await waitFor(() => second.getText("content").toString() === "hello world");
+
+    const cursor = Y.createRelativePositionFromTypeIndex(first.getText("content"), 5);
+    firstProvider.awareness.setLocalStateField("cursor", { anchor: cursor, head: cursor });
+    await waitFor(() =>
+      [...secondProvider.awareness.getStates().values()].some((state) => state.cursor?.head)
+    );
+    second.getText("content").insert(0, "say ");
+    await waitFor(() => first.getText("content").toString() === "say hello world");
+
+    const remoteCursor = [...secondProvider.awareness.getStates().values()]
+      .find((state) => state.cursor?.head)?.cursor;
+    const resolved = Y.createAbsolutePositionFromRelativePosition(remoteCursor.head, second);
+    expect(resolved?.index).toBe(9);
+
+    firstProvider.destroy();
+    secondProvider.destroy();
+    first.destroy();
+    second.destroy();
+    await app.close();
+  });
 });
