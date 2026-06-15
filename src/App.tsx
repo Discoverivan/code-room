@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "./Home";
 import { Room } from "./Room";
+import { updatePageMetadata } from "./pageMetadata";
 
 export type Theme = "light" | "dark";
 
@@ -12,12 +13,15 @@ function getInitialTheme(): Theme {
 }
 
 export function App() {
+  const location = useLocation();
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("code-room-theme", theme);
   }, [theme]);
+
+  useEffect(() => updatePageMetadata(location.pathname), [location.pathname]);
 
   const toggleTheme = () => setTheme((value) => (value === "light" ? "dark" : "light"));
 
