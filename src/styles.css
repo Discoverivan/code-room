@@ -107,8 +107,17 @@ button:disabled { cursor: wait; opacity: .6; }
 .room { height: 100vh; display: grid; grid-template-rows: 76px minmax(0, 1fr) 30px; background: var(--surface); }
 .room-header { display: flex; align-items: center; gap: 11vw; padding: 0 28px; border-bottom: 1px solid var(--border); background: var(--surface); }
 .room-id { font-size: 17px; font-weight: 650; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-.room-actions { margin-left: auto; display: flex; align-items: center; gap: 18px; }
+.room-actions { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.room-control-group { display: flex; align-items: center; gap: 8px; }
+.room-action-divider { width: 1px; height: 28px; background: var(--border); }
 .room-actions .icon-button { height: 44px; }
+.leave-room-button {
+  height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: 11px;
+  display: inline-flex; align-items: center; gap: 7px; color: #b64242; background: var(--surface); text-decoration: none; font-size: 13px; font-weight: 650;
+}
+.leave-room-button:hover { border-color: color-mix(in srgb, #c44747 42%, var(--border)); background: color-mix(in srgb, #c44747 8%, var(--surface)); }
+.leave-room-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.leave-room-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .participants { display: flex; padding-left: 10px; }
 .participants span { position: relative; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: white; font-weight: 700; border: 2px solid var(--surface); margin-left: -10px; box-shadow: 0 4px 12px rgba(0,0,0,.15); cursor: default; user-select: none; }
 .participants span::before {
@@ -123,7 +132,7 @@ button:disabled { cursor: wait; opacity: .6; }
 .participants span:hover { z-index: 31; }
 .participants span:hover::before { opacity: 1; transform: translate(-50%, 0) scale(1); }
 .participants span:hover::after { opacity: 1; }
-.share-control, .settings-control { position: relative; }
+.share-control, .settings-control, .leave-room-control { position: relative; }
 .copy-button { height: 44px; padding: 0 23px; border: 0; border-radius: 11px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: white; font-weight: 650; font-size: 15px; }
 .editor { min-height: 0; overflow: auto; background: var(--surface); }
 .cm-editor { height: 100%; background: var(--surface); color: var(--text); font: 16px/1.75 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
@@ -170,17 +179,29 @@ button:disabled { cursor: wait; opacity: .6; }
 .share-value button { flex: none; min-width: 68px; border: 0; border-radius: 9px; padding: 0 12px; background: var(--accent); color: white; font-weight: 650; }
 .share-popover small { display: flex; align-items: center; gap: 6px; min-height: 16px; margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .share-popover small svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.settings-popover {
+.settings-popover, .leave-popover {
   position: absolute; z-index: 20; top: calc(100% + 12px); right: 0; width: 280px; padding: 18px;
   border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 20px 55px rgba(15, 20, 35, .2);
   transform-origin: top right; animation: share-popover-in 160ms ease-out;
 }
+.settings-popover h2, .leave-popover h2 { margin: 0 0 5px; font-family: Manrope, ui-sans-serif, system-ui, sans-serif; font-size: 17px; letter-spacing: -.025em; }
+.settings-popover p, .leave-popover p { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
 .settings-popover label { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; }
 .settings-popover label:hover { background: var(--surface-soft); }
 .settings-popover input { margin-top: 3px; accent-color: var(--accent); }
 .settings-popover span { display: flex; flex-direction: column; gap: 2px; }
 .settings-popover strong { font-size: 13px; }
 .settings-popover small { color: var(--muted); font-size: 11px; }
+.settings-divider { height: 1px; margin: 8px 0; background: var(--border); }
+.theme-setting { width: 100%; padding: 10px; border: 0; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; background: transparent; color: var(--text); text-align: left; }
+.theme-setting:hover { background: var(--surface-soft); }
+.theme-setting span { display: flex; flex-direction: column; gap: 2px; }
+.theme-setting .theme-icon { width: 20px; height: 20px; }
+.leave-popover { width: 300px; }
+.leave-popover div { display: flex; justify-content: flex-end; gap: 8px; }
+.leave-popover button, .leave-popover a { min-width: 76px; padding: 9px 12px; border-radius: 9px; text-align: center; text-decoration: none; font-size: 12px; font-weight: 650; }
+.leave-popover button { border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.leave-popover a { border: 0; background: #c44747; color: white; }
 @keyframes share-popover-in { from { opacity: 0; transform: translateY(-5px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .center-state { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 30px; }
 .center-state h1 { margin: 24px 0 0; letter-spacing: -.04em; }
@@ -197,9 +218,18 @@ button:disabled { cursor: wait; opacity: .6; }
   .room-header { gap: 12px; padding: 0 12px; }
   .room-header .brand strong { display: none; }
   .room-id { font-size: 12px; max-width: 105px; overflow: hidden; text-overflow: ellipsis; }
+  .room-actions { gap: 8px; }
+  .room-action-divider { height: 24px; }
   .participants span { width: 32px; height: 32px; }
+  .leave-room-button { width: 44px; padding: 0; justify-content: center; font-size: 0; }
   .share-popover { position: fixed; top: 70px; right: 10px; left: 10px; width: auto; transform-origin: top center; }
   .share-popover::before { right: 76px; }
   .settings-popover { position: fixed; top: 70px; right: 10px; left: 10px; width: auto; transform-origin: top center; }
+  .leave-popover { position: fixed; top: 70px; right: 10px; left: 10px; width: auto; transform-origin: top center; }
   .statusbar { gap: 12px; padding: 0 10px; }
+}
+
+@media (max-width: 480px) {
+  .participants { display: none; }
+  .room-id { max-width: 92px; }
 }

@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
 import type { Theme } from "./App";
-import { Brand, ThemeToggle } from "./components";
+import { Brand } from "./components";
 import { Editor } from "./Editor";
 import { assignedParticipantColors, participantColor, participantSelectionColor } from "./participantColor";
 import { normalizeRoomName, roomNameStorageKey } from "./roomIdentity";
@@ -30,6 +30,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   const [cursor, setCursor] = useState({ line: 1, column: 1 });
   const [shareOpen, setShareOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState(savedName);
   const [nameInput, setNameInput] = useState(savedName);
@@ -126,17 +127,19 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   }, [session]);
 
   useEffect(() => {
-    if (!shareOpen && !settingsOpen) return;
+    if (!shareOpen && !settingsOpen && !leaveOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setShareOpen(false);
         setSettingsOpen(false);
+        setLeaveOpen(false);
       }
     };
     const closeOnOutsideClick = (event: MouseEvent) => {
       if (!(event.target as Element).closest(".popover-control")) {
         setShareOpen(false);
         setSettingsOpen(false);
+        setLeaveOpen(false);
       }
     };
     window.addEventListener("keydown", closeOnEscape);
@@ -145,7 +148,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
       window.removeEventListener("keydown", closeOnEscape);
       window.removeEventListener("mousedown", closeOnOutsideClick);
     };
-  }, [settingsOpen, shareOpen]);
+  }, [leaveOpen, settingsOpen, shareOpen]);
 
   const updateCursor = useCallback((value: { line: number; column: number }) => setCursor(value), []);
 
@@ -225,55 +228,95 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
               </span>
             ))}
           </div>
-          <div className="share-control popover-control">
-            <button className="copy-button" onClick={() => {
-              setSettingsOpen(false);
-              setShareOpen((open) => !open);
-            }} aria-expanded={shareOpen}>Share</button>
-            {shareOpen && (
-              <section className="share-popover" role="dialog" aria-labelledby="share-title">
-                <h2 id="share-title">Share this room</h2>
-                <p>Send this link to another participant.</p>
-                <span className="share-value">
-                  <input readOnly value={location.href} onFocus={(event) => event.currentTarget.select()} aria-label="Room link" />
-                  <button onClick={copyShareLink}>{copied ? "Copied" : "Copy"}</button>
-                </span>
-                <small>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
-                  </svg>
-                  Anyone with the link can join.
-                </small>
-              </section>
-            )}
+          <div className="room-control-group">
+            <div className="share-control popover-control">
+              <button className="copy-button" onClick={() => {
+                setSettingsOpen(false);
+                setLeaveOpen(false);
+                setShareOpen((open) => !open);
+              }} aria-expanded={shareOpen}>Share</button>
+              {shareOpen && (
+                <section className="share-popover" role="dialog" aria-labelledby="share-title">
+                  <h2 id="share-title">Share this room</h2>
+                  <p>Send this link to another participant.</p>
+                  <span className="share-value">
+                    <input readOnly value={location.href} onFocus={(event) => event.currentTarget.select()} aria-label="Room link" />
+                    <button onClick={copyShareLink}>{copied ? "Copied" : "Copy"}</button>
+                  </span>
+                  <small>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
+                    </svg>
+                    Anyone with the link can join.
+                  </small>
+                </section>
+              )}
+            </div>
+            <div className="settings-control popover-control">
+              <button className="icon-button" onClick={() => {
+                setShareOpen(false);
+                setLeaveOpen(false);
+                setSettingsOpen((open) => !open);
+              }} aria-label="Settings" aria-expanded={settingsOpen}>
+                <svg className="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6Z" />
+                </svg>
+              </button>
+              {settingsOpen && (
+                <section className="settings-popover" role="dialog" aria-labelledby="settings-title">
+                  <h2 id="settings-title">Settings</h2>
+                  <p>Customize remote cursors and room appearance.</p>
+                  <label>
+                    <input type="radio" name="remote-cursor-display" checked={remoteCursorDisplay === "dot"} onChange={() => updateRemoteCursorDisplay("dot")} />
+                    <span><strong>Dot</strong><small>Show the name on hover</small></span>
+                  </label>
+                  <label>
+                    <input type="radio" name="remote-cursor-display" checked={remoteCursorDisplay === "name"} onChange={() => updateRemoteCursorDisplay("name")} />
+                    <span><strong>Full name</strong><small>Always show the name</small></span>
+                  </label>
+                  <div className="settings-divider" />
+                  <button className="theme-setting" onClick={toggleTheme}>
+                    <span><strong>Theme</strong><small>Use {theme === "light" ? "dark" : "light"} theme</small></span>
+                    <svg className="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+                      {theme === "light" ? (
+                        <path d="M20.4 15.3A9 9 0 0 1 8.7 3.6 9 9 0 1 0 20.4 15.3Z" />
+                      ) : (
+                        <>
+                          <circle cx="12" cy="12" r="4" />
+                          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" />
+                        </>
+                      )}
+                    </svg>
+                  </button>
+                </section>
+              )}
+            </div>
           </div>
-          <div className="settings-control popover-control">
-            <button className="icon-button" onClick={() => {
+          <span className="room-action-divider" aria-hidden="true" />
+          <div className="leave-room-control popover-control">
+            <button className="leave-room-button" onClick={() => {
               setShareOpen(false);
-              setSettingsOpen((open) => !open);
-            }} aria-label="Cursor settings" aria-expanded={settingsOpen}>
-              <svg className="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6Z" />
+              setSettingsOpen(false);
+              setLeaveOpen((open) => !open);
+            }} aria-expanded={leaveOpen}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 5 3 12l7 7M3 12h14M17 5h4v14h-4" />
               </svg>
+              Leave room
             </button>
-            {settingsOpen && (
-              <section className="settings-popover" role="dialog" aria-labelledby="settings-title">
-                <h2 id="settings-title">Cursor display</h2>
-                <p>Choose how remote cursors are identified.</p>
-                <label>
-                  <input type="radio" name="remote-cursor-display" checked={remoteCursorDisplay === "dot"} onChange={() => updateRemoteCursorDisplay("dot")} />
-                  <span><strong>Dot</strong><small>Show the name on hover</small></span>
-                </label>
-                <label>
-                  <input type="radio" name="remote-cursor-display" checked={remoteCursorDisplay === "name"} onChange={() => updateRemoteCursorDisplay("name")} />
-                  <span><strong>Full name</strong><small>Always show the name</small></span>
-                </label>
+            {leaveOpen && (
+              <section className="leave-popover" role="dialog" aria-labelledby="leave-title">
+                <h2 id="leave-title">Leave this room?</h2>
+                <p>You can return later using the same room link.</p>
+                <div>
+                  <button onClick={() => setLeaveOpen(false)}>Stay</button>
+                  <Link to="/">Leave room</Link>
+                </div>
               </section>
             )}
           </div>
-          <ThemeToggle theme={theme} onClick={toggleTheme} />
         </div>
       </header>
       <Editor
