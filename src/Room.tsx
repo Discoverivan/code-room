@@ -67,8 +67,7 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
     currentSession.provider.on("sync", setInitialCursor);
     currentSession.provider.connect();
     setInitialCursor(currentSession.provider.synced);
-    setParticipants([{ id: currentSession.document.clientID, ...user }]);
-    setOnline(1);
+    return { id: currentSession.document.clientID, ...user };
   }, []);
 
   useEffect(() => {
@@ -85,7 +84,13 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   }, [id, session]);
 
   useEffect(() => {
-    if (exists && session && name) connect(session, name);
+    if (!exists || !session || !name) return;
+    const user = connect(session, name);
+    const updateLocalParticipant = window.setTimeout(() => {
+      setParticipants([user]);
+      setOnline(1);
+    }, 0);
+    return () => window.clearTimeout(updateLocalParticipant);
   }, [connect, exists, session, name]);
 
   useEffect(() => {
