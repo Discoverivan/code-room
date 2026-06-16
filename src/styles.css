@@ -39,7 +39,7 @@
 body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); color: var(--text); }
 button, input { font: inherit; }
 button { cursor: pointer; }
-button:disabled { cursor: wait; opacity: .6; }
+button:disabled { cursor: not-allowed; opacity: .6; }
 
 .brand { display: inline-flex; align-items: center; gap: 12px; white-space: nowrap; font-size: 22px; }
 .brand strong { font-family: Manrope, ui-sans-serif, system-ui, sans-serif; font-weight: 600; letter-spacing: -.025em; }
@@ -138,6 +138,10 @@ button:disabled { cursor: wait; opacity: .6; }
 .cm-editor { height: 100%; background: var(--surface); color: var(--text); font: 16px/1.75 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 .cm-editor.cm-focused { outline: none; }
 .cm-cursor, .cm-dropCursor { border-left: 2px solid var(--local-cursor, var(--cursor)) !important; margin-left: -1px !important; }
+.cm-selectionBackground,
+.cm-content ::selection {
+  background: color-mix(in srgb, var(--local-cursor, var(--cursor)) 22%, transparent) !important;
+}
 .cm-scroller { padding: 28px 14px 100px; }
 .cm-gutters {
   margin-top: -28px; padding: 28px 14px 0 8px;
