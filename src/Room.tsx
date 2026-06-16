@@ -15,7 +15,7 @@ type RemoteCursorDisplay = "dot" | "name";
 const REMOTE_CURSOR_DISPLAY_KEY = "code-room-remote-cursor-display";
 
 function savedRemoteCursorDisplay(): RemoteCursorDisplay {
-  return localStorage.getItem(REMOTE_CURSOR_DISPLAY_KEY) === "name" ? "name" : "dot";
+  return localStorage.getItem(REMOTE_CURSOR_DISPLAY_KEY) === "dot" ? "dot" : "name";
 }
 
 export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => void }) {
@@ -214,7 +214,6 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
         <Link className="brand-link" to="/" aria-label="Go to home">
           <Brand />
         </Link>
-        <span className="room-id">{id}</span>
         <div className="room-actions">
           <div className="participants" aria-label={`${online} online`}>
             {participants.slice(0, 5).map((participant) => (
