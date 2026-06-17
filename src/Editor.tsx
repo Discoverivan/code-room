@@ -18,13 +18,25 @@ function rectsOverlap(first: DOMRect, second: DOMRect, padding = 0) {
     first.bottom + padding > second.top;
 }
 
+function rectContainsPoint(rect: DOMRect, x: number, y: number, padding = 0) {
+  return x >= rect.left - padding &&
+    x <= rect.right + padding &&
+    y >= rect.top - padding &&
+    y <= rect.bottom + padding;
+}
+
 function moveRect(rect: DOMRect, y: number) {
   return new DOMRect(rect.x, rect.y + y, rect.width, rect.height);
 }
 
 function caretPositionRect(caret: Element) {
   const dot = caret.querySelector(".cm-ySelectionCaretDot");
-  return dot?.getBoundingClientRect() ?? caret.getBoundingClientRect();
+  const dotRect = dot?.getBoundingClientRect();
+  if (dotRect && (dotRect.width > 1 || dotRect.height > 1)) return dotRect;
+  const caretRect = caret.getBoundingClientRect();
+  if (caretRect.width > 1 || caretRect.height > 1) return caretRect;
+  const labelRect = caret.querySelector(".cm-ySelectionInfo")?.getBoundingClientRect();
+  return labelRect ? new DOMRect(labelRect.left, labelRect.bottom - 8, 8, 8) : caretRect;
 }
 
 export function Editor({
@@ -126,18 +138,13 @@ export function Editor({
     };
     const updateHoveredRemoteLabel = (event: MouseEvent) => {
       const isNameMode = container.current?.classList.contains("remote-cursor-names");
-      const hoverPadding = 10;
-      const targets = isNameMode
+      const hoverPadding = isNameMode ? 10 : 18;
+      const caret = isNameMode
         ? [...view.dom.querySelectorAll(".cm-ySelectionInfo")]
-        : [...view.dom.querySelectorAll(".cm-ySelectionCaretDot")];
-      const target = targets.find((element) => {
-        const rect = element.getBoundingClientRect();
-        return event.clientX >= rect.left - hoverPadding &&
-          event.clientX <= rect.right + hoverPadding &&
-          event.clientY >= rect.top - hoverPadding &&
-          event.clientY <= rect.bottom + hoverPadding;
-      });
-      const caret = target?.closest(".cm-ySelectionCaret") ?? null;
+          .find((label) => rectContainsPoint(label.getBoundingClientRect(), event.clientX, event.clientY, hoverPadding))
+          ?.closest(".cm-ySelectionCaret") ?? null
+        : [...view.dom.querySelectorAll(".cm-ySelectionCaret")]
+          .find((remoteCaret) => rectContainsPoint(caretPositionRect(remoteCaret), event.clientX, event.clientY, hoverPadding)) ?? null;
       if (!caret) {
         if (hoveredRemoteCarets.length > 0) setHoveredRemoteCarets([]);
         return;
@@ -161,8 +168,16 @@ export function Editor({
     const clearHoveredRemoteLabel = () => {
       setHoveredRemoteCarets([]);
     };
-    view.dom.addEventListener("mousemove", updateHoveredRemoteLabel);
-    view.dom.addEventListener("mouseleave", clearHoveredRemoteLabel);
+    const handleEditorModeChange = () => {
+      setHoveredRemoteCarets([]);
+      scheduleRemoteLabelLayout();
+    };
+    const classObserver = new MutationObserver(handleEditorModeChange);
+    classObserver.observe(container.current, { attributeFilter: ["class"] });
+    view.scrollDOM.addEventListener("pointermove", updateHoveredRemoteLabel);
+    view.scrollDOM.addEventListener("mousemove", updateHoveredRemoteLabel);
+    view.scrollDOM.addEventListener("pointerleave", clearHoveredRemoteLabel);
+    view.scrollDOM.addEventListener("mouseleave", clearHoveredRemoteLabel);
     view.scrollDOM.addEventListener("scroll", scheduleRemoteLabelLayout);
     provider.awareness.on("change", scheduleRemoteLabelLayout);
     window.addEventListener("resize", scheduleRemoteLabelLayout);
@@ -170,8 +185,11 @@ export function Editor({
     onCursor({ line: 1, column: 1 });
     return () => {
       if (layoutFrame) window.cancelAnimationFrame(layoutFrame);
-      view.dom.removeEventListener("mousemove", updateHoveredRemoteLabel);
-      view.dom.removeEventListener("mouseleave", clearHoveredRemoteLabel);
+      classObserver.disconnect();
+      view.scrollDOM.removeEventListener("pointermove", updateHoveredRemoteLabel);
+      view.scrollDOM.removeEventListener("mousemove", updateHoveredRemoteLabel);
+      view.scrollDOM.removeEventListener("pointerleave", clearHoveredRemoteLabel);
+      view.scrollDOM.removeEventListener("mouseleave", clearHoveredRemoteLabel);
       view.scrollDOM.removeEventListener("scroll", scheduleRemoteLabelLayout);
       provider.awareness.off("change", scheduleRemoteLabelLayout);
       window.removeEventListener("resize", scheduleRemoteLabelLayout);
