@@ -164,6 +164,8 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 }
 .remote-cursor-names .cm-ySelectionCaretDot { display: none; }
 .remote-cursor-names .cm-ySelectionInfo { opacity: 1 !important; transition: opacity 140ms ease-out; }
+.remote-cursor-label-group-hover > .cm-ySelectionCaretDot { transform-origin: bottom center; transform: scale(0); }
+.remote-cursor-label-group-hover > .cm-ySelectionInfo { opacity: 1 !important; transition-delay: 0s !important; }
 .remote-cursor-names .cm-ySelectionCaret:hover > .cm-ySelectionInfo,
 .remote-cursor-names .remote-cursor-label-hover > .cm-ySelectionInfo,
 .remote-cursor-names .remote-cursor-label-near-local > .cm-ySelectionInfo { opacity: .28 !important; }

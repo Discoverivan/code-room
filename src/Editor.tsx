@@ -9,6 +9,7 @@ import type { Theme } from "./App";
 
 type CursorPosition = { line: number; column: number };
 type RemoteLabelPlacement = { rect: DOMRect };
+type RemoteCaretGroup = { caret: Element; rect: DOMRect };
 
 function rectsOverlap(first: DOMRect, second: DOMRect, padding = 0) {
   return first.left - padding < second.right &&
@@ -19,6 +20,11 @@ function rectsOverlap(first: DOMRect, second: DOMRect, padding = 0) {
 
 function moveRect(rect: DOMRect, y: number) {
   return new DOMRect(rect.x, rect.y + y, rect.width, rect.height);
+}
+
+function caretPositionRect(caret: Element) {
+  const dot = caret.querySelector(".cm-ySelectionCaretDot");
+  return dot?.getBoundingClientRect() ?? caret.getBoundingClientRect();
 }
 
 export function Editor({
@@ -61,8 +67,21 @@ export function Editor({
       ]
     });
     const view = new EditorView({ state, parent: container.current });
-    let hoveredRemoteCaret: Element | null = null;
+    let hoveredRemoteCarets: Element[] = [];
     let layoutFrame = 0;
+    const setHoveredRemoteCarets = (carets: Element[]) => {
+      hoveredRemoteCarets.forEach((caret) => caret.classList.remove(
+        "remote-cursor-label-hover",
+        "remote-cursor-label-group-hover"
+      ));
+      carets.forEach((caret) => caret.classList.add(
+        container.current?.classList.contains("remote-cursor-names")
+          ? "remote-cursor-label-hover"
+          : "remote-cursor-label-group-hover"
+      ));
+      hoveredRemoteCarets = carets;
+      scheduleRemoteLabelLayout();
+    };
     const clearRemoteLabelLayout = () => {
       view.dom.querySelectorAll<HTMLElement>(".cm-ySelectionInfo").forEach((label) => {
         label.style.removeProperty("--remote-label-offset");
@@ -71,11 +90,15 @@ export function Editor({
     };
     const layoutRemoteLabels = () => {
       layoutFrame = 0;
-      if (!container.current?.classList.contains("remote-cursor-names")) {
+      const isNameMode = container.current?.classList.contains("remote-cursor-names");
+      const visibleLabels = isNameMode
+        ? view.dom.querySelectorAll<HTMLElement>(".cm-ySelectionInfo")
+        : view.dom.querySelectorAll<HTMLElement>(".remote-cursor-label-group-hover > .cm-ySelectionInfo");
+      if (!isNameMode && visibleLabels.length === 0) {
         clearRemoteLabelLayout();
         return;
       }
-      const labels = [...view.dom.querySelectorAll<HTMLElement>(".cm-ySelectionInfo")];
+      const labels = [...visibleLabels];
       const localRects = [...view.dom.querySelectorAll<HTMLElement>(".cm-cursor, .cm-selectionBackground")]
         .flatMap((element) => [...element.getClientRects()])
         .filter((rect) => rect.width > 0 || rect.height > 0);
@@ -102,29 +125,41 @@ export function Editor({
       if (!layoutFrame) layoutFrame = window.requestAnimationFrame(layoutRemoteLabels);
     };
     const updateHoveredRemoteLabel = (event: MouseEvent) => {
-      if (!container.current?.classList.contains("remote-cursor-names")) {
-        hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
-        hoveredRemoteCaret = null;
-        return;
-      }
+      const isNameMode = container.current?.classList.contains("remote-cursor-names");
       const hoverPadding = 10;
-      const labels = view.dom.querySelectorAll(".cm-ySelectionInfo");
-      const label = [...labels].find((element) => {
+      const targets = isNameMode
+        ? [...view.dom.querySelectorAll(".cm-ySelectionInfo")]
+        : [...view.dom.querySelectorAll(".cm-ySelectionCaretDot")];
+      const target = targets.find((element) => {
         const rect = element.getBoundingClientRect();
         return event.clientX >= rect.left - hoverPadding &&
           event.clientX <= rect.right + hoverPadding &&
           event.clientY >= rect.top - hoverPadding &&
           event.clientY <= rect.bottom + hoverPadding;
       });
-      const caret = label?.closest(".cm-ySelectionCaret") ?? null;
-      if (caret === hoveredRemoteCaret) return;
-      hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
-      caret?.classList.add("remote-cursor-label-hover");
-      hoveredRemoteCaret = caret;
+      const caret = target?.closest(".cm-ySelectionCaret") ?? null;
+      if (!caret) {
+        if (hoveredRemoteCarets.length > 0) setHoveredRemoteCarets([]);
+        return;
+      }
+      if (isNameMode) {
+        if (hoveredRemoteCarets.length === 1 && hoveredRemoteCarets[0] === caret) return;
+        setHoveredRemoteCarets([caret]);
+        return;
+      }
+      const rect = caretPositionRect(caret);
+      const groupedCarets = [...view.dom.querySelectorAll(".cm-ySelectionCaret")]
+        .map((remoteCaret): RemoteCaretGroup => ({ caret: remoteCaret, rect: caretPositionRect(remoteCaret) }))
+        .filter((group) => rectsOverlap(rect, group.rect, 4))
+        .map((group) => group.caret);
+      if (
+        groupedCarets.length === hoveredRemoteCarets.length &&
+        groupedCarets.every((groupedCaret) => hoveredRemoteCarets.includes(groupedCaret))
+      ) return;
+      setHoveredRemoteCarets(groupedCarets);
     };
     const clearHoveredRemoteLabel = () => {
-      hoveredRemoteCaret?.classList.remove("remote-cursor-label-hover");
-      hoveredRemoteCaret = null;
+      setHoveredRemoteCarets([]);
     };
     view.dom.addEventListener("mousemove", updateHoveredRemoteLabel);
     view.dom.addEventListener("mouseleave", clearHoveredRemoteLabel);
