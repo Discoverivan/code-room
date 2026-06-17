@@ -245,9 +245,9 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   return (
     <main className="room">
       <header className="room-header">
-        <Link className="brand-link" to="/" aria-label="Go to home">
+        <div className="room-brand" aria-label="Code Room">
           <Brand />
-        </Link>
+        </div>
         <div className="room-actions">
           <div className="participants" aria-label={`${online} online`}>
             {participants.slice(0, 5).map((participant) => (
