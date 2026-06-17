@@ -89,6 +89,24 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
   }, [connect, exists, session, name]);
 
   useEffect(() => {
+    if (!session || !name) return;
+    const refreshAwareness = () => {
+      const localState = session.provider.awareness.getLocalState();
+      if (localState) session.provider.awareness.setLocalState(localState);
+    };
+    const interval = window.setInterval(refreshAwareness, 10_000);
+    document.addEventListener("visibilitychange", refreshAwareness);
+    window.addEventListener("focus", refreshAwareness);
+    window.addEventListener("pageshow", refreshAwareness);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshAwareness);
+      window.removeEventListener("focus", refreshAwareness);
+      window.removeEventListener("pageshow", refreshAwareness);
+    };
+  }, [name, session]);
+
+  useEffect(() => {
     if (!session) return;
     const updateConnection = ({ status }: { status: string }) =>
       setConnection(status === "connected" ? "Connected" : status === "connecting" ? "Connecting" : "Disconnected");
