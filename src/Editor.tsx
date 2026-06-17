@@ -1,7 +1,7 @@
 import { type CSSProperties, useEffect, useRef } from "react";
 import { EditorState } from "@codemirror/state";
 import { drawSelection, EditorView, highlightActiveLine, keymap, lineNumbers } from "@codemirror/view";
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { yCollab } from "y-codemirror.next";
 import type { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
@@ -36,7 +36,7 @@ export function Editor({
         history(),
         drawSelection(),
         highlightActiveLine(),
-        keymap.of([...defaultKeymap, ...historyKeymap]),
+        keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
         yCollab(text, provider.awareness, { undoManager: new Y.UndoManager(text) }),
         EditorView.lineWrapping,
         EditorView.updateListener.of((update) => {

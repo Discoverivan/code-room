@@ -134,7 +134,7 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .participants span:hover::after { opacity: 1; }
 .share-control, .settings-control, .leave-room-control { position: relative; }
 .copy-button { height: 44px; padding: 0 23px; border: 0; border-radius: 11px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: white; font-weight: 650; font-size: 15px; }
-.editor { min-height: 0; overflow: auto; background: var(--surface); }
+.editor { min-height: 0; overflow: hidden; background: var(--surface); }
 .cm-editor { height: 100%; background: var(--surface); color: var(--text); font: 16px/1.75 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 .cm-editor.cm-focused { outline: none; }
 .cm-cursor, .cm-dropCursor { border-left: 2px solid var(--local-cursor, var(--cursor)) !important; margin-left: -1px !important; }
@@ -142,12 +142,14 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .cm-content ::selection {
   background: color-mix(in srgb, var(--local-cursor, var(--cursor)) 22%, transparent) !important;
 }
-.cm-scroller { padding: 28px 14px 100px; }
+.cm-scroller {
+  padding: 28px 14px;
+  background: linear-gradient(to right, var(--surface-soft) 0 64px, var(--surface) 64px);
+}
 .cm-gutters {
   margin-top: -28px; padding: 28px 14px 0 8px;
   background: var(--surface-soft) !important; color: var(--muted) !important; border: 0 !important;
 }
-.cm-gutters::after { content: ""; position: absolute; top: 100%; right: 0; left: 0; height: 100vh; background: var(--surface-soft); pointer-events: none; }
 .cm-activeLine:not(.cm-yLineSelection), .cm-activeLineGutter { background: color-mix(in srgb, var(--surface-soft) 65%, transparent) !important; }
 .cm-activeLine.cm-yLineSelection { box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--text) 8%, transparent); }
 .cm-ySelectionCaret {
