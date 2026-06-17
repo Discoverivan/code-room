@@ -54,8 +54,19 @@ export function Room({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => 
       colorLight: participantSelectionColor(color),
       name: userName
     };
+    currentSession.provider.awareness.setLocalState({ user });
+    const setInitialCursor = (synced = true) => {
+      if (!synced || currentSession.provider.awareness.getLocalState()?.cursor != null) return;
+      const cursor = Y.createRelativePositionFromTypeIndex(currentSession.document.getText("content"), 0);
+      currentSession.provider.awareness.setLocalStateField("cursor", {
+        anchor: cursor,
+        head: cursor
+      });
+      currentSession.provider.off("sync", setInitialCursor);
+    };
+    currentSession.provider.on("sync", setInitialCursor);
     currentSession.provider.connect();
-    currentSession.provider.awareness.setLocalStateField("user", user);
+    setInitialCursor(currentSession.provider.synced);
     setParticipants([{ id: currentSession.document.clientID, ...user }]);
     setOnline(1);
   }, []);

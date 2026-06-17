@@ -113,6 +113,51 @@ describe("real-time collaboration", () => {
     await app.close();
   });
 
+  it("sends the current document and initial cursor awareness to late joiners", async () => {
+    const app = await buildApp({ dataDir: dataDir() });
+    await app.listen({ port: 0, host: "127.0.0.1" });
+    const address = app.server.address();
+    if (!address || typeof address === "string") throw new Error("Missing server address");
+    const created = await app.inject({ method: "POST", url: "/api/rooms" });
+    const { id } = created.json<{ id: string }>();
+
+    const first = new Y.Doc();
+    const second = new Y.Doc();
+    const url = `ws://127.0.0.1:${address.port}/ws`;
+    const firstProvider = new WebsocketProvider(url, id, first, { WebSocketPolyfill: WebSocket, connect: false });
+    const secondProvider = new WebsocketProvider(url, id, second, { WebSocketPolyfill: WebSocket, connect: false });
+    const setInitialCursor = (doc: Y.Doc, provider: WebsocketProvider) => {
+      const cursor = Y.createRelativePositionFromTypeIndex(doc.getText("content"), 0);
+      provider.awareness.setLocalStateField("cursor", { anchor: cursor, head: cursor });
+    };
+    firstProvider.awareness.setLocalState({ user: { name: "Ivan", color: "#111111" } });
+    firstProvider.connect();
+
+    await waitFor(() => firstProvider.wsconnected);
+    setInitialCursor(first, firstProvider);
+    first.getText("content").insert(0, "existing text");
+
+    secondProvider.awareness.setLocalState({ user: { name: "Anya", color: "#222222" } });
+    secondProvider.connect();
+
+    await waitFor(() => secondProvider.wsconnected && second.getText("content").toString() === "existing text");
+    setInitialCursor(second, secondProvider);
+    await waitFor(() =>
+      [...firstProvider.awareness.getStates().values()].some((state) => state.user?.name === "Anya" && state.cursor?.head)
+    );
+
+    const remoteCursor = [...firstProvider.awareness.getStates().values()]
+      .find((state) => state.user?.name === "Anya")?.cursor;
+    const resolved = Y.createAbsolutePositionFromRelativePosition(remoteCursor.head, first);
+    expect(resolved?.index).toBe(0);
+
+    firstProvider.destroy();
+    secondProvider.destroy();
+    first.destroy();
+    second.destroy();
+    await app.close();
+  });
+
   it("limits rooms to the available participant colors", async () => {
     const app = await buildApp({ dataDir: dataDir() });
     await app.listen({ port: 0, host: "127.0.0.1" });
