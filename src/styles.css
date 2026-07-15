@@ -56,7 +56,7 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .theme-icon, .settings-icon { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .sun-icon { width: 24px; height: 24px; }
 .moon-icon { width: 20px; height: 20px; }
-.settings-icon { width: 21px; height: 21px; }
+.settings-icon { width: 24px; height: 24px; fill: currentColor; stroke: none; }
 .github-button { padding: 0 17px; gap: 8px; text-decoration: none; font-weight: 650; }
 .github-button img { width: 18px; height: 18px; }
 [data-theme="dark"] .github-button img { filter: invert(1); }
@@ -160,7 +160,8 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 }
 .cm-ySelection, .cm-yLineSelection { border-radius: 3px; }
 .cm-ySelectionInfo {
-  max-width: 160px; overflow: hidden; padding: 4px 8px !important; border-radius: 5px !important;
+  left: -2px !important;
+  max-width: 160px; overflow: hidden; padding: 4px 8px !important; border-radius: 5px 5px 5px 0 !important;
   font: 600 11px/1.2 Inter, sans-serif !important; color: white !important; text-overflow: ellipsis;
   pointer-events: none; transform: translateY(calc(-3px + var(--remote-label-offset, 0px)));
 }
