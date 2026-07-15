@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Шестерёнка настроек</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #10151d; color: #eef1f7; }
+    body { max-width: 680px; margin: 0 auto; padding: 48px 24px; }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    p { color: #8993a5; }
+    .examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 28px; }
+    .example { padding: 22px; border: 1px solid #242d3b; border-radius: 12px; background: #151b25; }
+    h2 { margin: 0 0 16px; font-size: 14px; }
+    .icon-button { width: 48px; height: 44px; border: 1px solid #242d3b; border-radius: 12px; display: grid; place-items: center; background: #151b25; color: #eef1f7; }
+    .settings-icon { display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; width: 21px; height: 21px; }
+    .updated .settings-icon { width: 24px; height: 24px; fill: currentColor; stroke: none; }
+    .note { margin: 14px 0 0; font-size: 13px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <h1>Иконка настроек</h1>
+  <p>Сравнение на размере фактической кнопки в тёмной теме.</p>
+
+  <div class="examples">
+    <section class="example">
+      <h2>Было</h2>
+      <div class="icon-button" aria-label="Настройки">
+        <svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6Z" />
+        </svg>
+      </div>
+      <p class="note">Тонкий контур и мелкие зубцы сливаются.</p>
+    </section>
+
+    <section class="example updated">
+      <h2>Стало</h2>
+      <div class="icon-button" aria-label="Настройки">
+        <svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19.43 12.98c.04-.32.07-.65.07-.98s-.02-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.37-.31-.6-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.51.51 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1c-.23-.09-.48 0-.6.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.02.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.37.31.6.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.48 0 .6-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z" />
+        </svg>
+      </div>
+      <p class="note">Крупные вырезы и цельная форма заметнее.</p>
+    </section>
+  </div>
+</body>
+</html>

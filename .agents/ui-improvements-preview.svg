@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="610" viewBox="0 0 960 610" role="img" aria-labelledby="title description">
+  <title id="title">Сравнение доработок интерфейса</title>
+  <desc id="description">Сравнение плашки удалённого курсора и иконки настроек до и после исправления.</desc>
+  <rect width="960" height="610" fill="#10151d"/>
+  <style>
+    .title { fill: #eef1f7; font: 600 25px Inter, Arial, sans-serif; }
+    .subtitle { fill: #8993a5; font: 14px Inter, Arial, sans-serif; }
+    .label { fill: #eef1f7; font: 600 15px Inter, Arial, sans-serif; }
+    .note { fill: #8993a5; font: 13px Inter, Arial, sans-serif; }
+    .code { fill: #8bd5ff; font: 18px Consolas, monospace; }
+  </style>
+  <text x="42" y="52" class="title">Доработки интерфейса</text>
+  <text x="42" y="78" class="subtitle">Сравнение состояний «было / стало»</text>
+
+  <rect x="42" y="110" width="876" height="205" rx="14" fill="#151b25" stroke="#242d3b"/>
+  <text x="68" y="145" class="label">Плашка удалённого курсора</text>
+  <text x="68" y="180" class="note">Было</text>
+  <rect x="68" y="193" width="378" height="94" rx="9" fill="#101720"/>
+  <text x="92" y="249" class="code">account_id;</text>
+  <rect x="250" y="201" width="2" height="65" fill="#d61e25"/>
+  <rect x="254" y="201" width="85" height="29" rx="5" fill="#d61e25"/>
+  <text x="267" y="220" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Андрей</text>
+  <text x="68" y="307" class="note">Курсор смещён от левого края плашки.</text>
+
+  <text x="494" y="180" class="note">Стало</text>
+  <rect x="494" y="193" width="378" height="94" rx="9" fill="#101720"/>
+  <text x="518" y="249" class="code">account_id;</text>
+  <rect x="676" y="201" width="2" height="65" fill="#d61e25"/>
+  <path d="M676 201h85a5 5 0 0 1 5 5v19a5 5 0 0 1-5 5h-85z" fill="#d61e25"/>
+  <text x="689" y="220" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="600">Андрей</text>
+  <text x="494" y="307" class="note">Курсор и левый край плашки выровнены.</text>
+
+  <rect x="42" y="345" width="876" height="220" rx="14" fill="#151b25" stroke="#242d3b"/>
+  <text x="68" y="380" class="label">Иконка настроек</text>
+  <text x="68" y="415" class="note">Было</text>
+  <rect x="68" y="430" width="48" height="44" rx="12" fill="#151b25" stroke="#242d3b"/>
+  <g transform="translate(81 442)" fill="none" stroke="#eef1f7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="10" r="3"/>
+    <path d="M18.4 13a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 14 17.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V19H8.6v-.1A1.7 1.7 0 0 0 8 17.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 3.6 13a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2V7.6h.1A1.7 1.7 0 0 0 3.6 7a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8 2.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V1h4v.1A1.7 1.7 0 0 0 14 2.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 18.4 7a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6Z"/>
+  </g>
+  <text x="68" y="507" class="note">Контур, 21 px — мелкие зубцы сливаются.</text>
+
+  <text x="494" y="415" class="note">Стало</text>
+  <rect x="494" y="430" width="48" height="44" rx="12" fill="#151b25" stroke="#242d3b"/>
+  <path transform="translate(506 440) scale(.95)" fill="#eef1f7" d="M19.43 12.98c.04-.32.07-.65.07-.98s-.02-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.37-.31-.6-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.51.51 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1c-.23-.09-.48 0-.6.22l-2 3.46c-.12.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.02.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.37.31.6.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.23.09.48 0 .6-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/>
+  <text x="494" y="507" class="note">Цельная форма, 24 px — контрастнее в тёмной теме.</text>
+</svg>
