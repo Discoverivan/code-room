@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="500" viewBox="0 0 1080 500" role="img" aria-labelledby="title description">
   <title id="title">Длина удалённого курсора до и после исправления</title>
-  <desc id="description">До исправления плашка имени перекрывает верхнюю часть курсора, поэтому линия просвечивает внутри неё. После исправления плашка заканчивается на верхней границе курсора без перекрытия.</desc>
+  <desc id="description">До исправления линия под плашкой использует полную высоту рамки курсора и выглядит длиннее обычной. После исправления плашка остаётся на месте, а линия начинается ниже и совпадает по длине с курсором без плашки.</desc>
   <rect width="1080" height="500" fill="#10151d"/>
   <style>
     .title { fill: #eef1f7; font: 600 26px Inter, Arial, sans-serif; }
@@ -17,7 +17,7 @@
 
   <rect x="40" y="100" width="490" height="350" rx="16" fill="#151b25" stroke="#273142"/>
   <text x="68" y="136" class="panel-title">До</text>
-  <text x="68" y="160" class="note">Линия просвечивает внутри плашки</text>
+  <text x="68" y="160" class="note">Полная рамка видна сквозь плашку</text>
   <rect x="68" y="180" width="434" height="158" rx="10" fill="#131a26"/>
   <rect x="68" y="180" width="58" height="158" fill="#101823"/>
   <text x="91" y="274" class="code">#</text>
@@ -26,29 +26,30 @@
   <path d="M126 176h114a8 8 0 0 1 8 8v37a8 8 0 0 1-8 8H126z" fill="#e0262d" opacity=".28"/>
   <text x="144" y="210" class="name" opacity=".28">Иван</text>
   <path d="M270 220h12M276 220v92M270 312h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
-  <text x="292" y="270" class="measure">92 px</text>
-  <path d="M112 220h8M116 220v9M112 229h8" fill="none" stroke="#f3b94f" stroke-width="1.5"/>
-  <text x="68" y="326" fill="#f3b94f" font-family="Inter, Arial, sans-serif" font-size="12">≈ 7 px перекрытия</text>
+  <text x="292" y="270" class="measure">1.35em</text>
+  <text x="68" y="326" fill="#f3b94f" font-family="Inter, Arial, sans-serif" font-size="12">Линия длиннее обычной</text>
   <text x="68" y="370" class="note">Без плашки</text>
   <rect x="166" y="350" width="2" height="92" fill="#e0262d"/>
-  <path d="M270 350h12M276 350v92M270 442h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
-  <text x="292" y="400" class="measure">92 px</text>
+  <circle cx="167" cy="350" r="7" fill="#e0262d"/>
+  <path d="M270 355h12M276 355v87M270 442h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
+  <text x="292" y="400" class="measure">1.15em</text>
 
   <rect x="550" y="100" width="490" height="350" rx="16" fill="#151b25" stroke="#273142"/>
   <text x="578" y="136" class="panel-title">После</text>
-  <text x="578" y="160" class="note">Плашка заканчивается на верхней границе курсора</text>
+  <text x="578" y="160" class="note">Плашка остаётся на прежнем месте</text>
   <rect x="578" y="180" width="434" height="158" rx="10" fill="#131a26"/>
   <rect x="578" y="180" width="58" height="158" fill="#101823"/>
   <text x="601" y="274" class="code">#</text>
   <text x="661" y="274" class="code">иерархия</text>
-  <rect x="636" y="220" width="2" height="92" fill="#e0262d"/>
-  <path d="M636 167h114a8 8 0 0 1 8 8v37a8 8 0 0 1-8 8H636z" fill="#e0262d" opacity=".28"/>
-  <text x="654" y="201" class="name" opacity=".28">Иван</text>
-  <path d="M780 220h12M786 220v92M780 312h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
-  <text x="802" y="270" class="measure">92 px</text>
-  <text x="578" y="326" fill="#65c889" font-family="Inter, Arial, sans-serif" font-size="12">0 px перекрытия</text>
+  <rect x="636" y="225" width="2" height="87" fill="#e0262d"/>
+  <path d="M636 176h114a8 8 0 0 1 8 8v37a8 8 0 0 1-8 8H636z" fill="#e0262d" opacity=".28"/>
+  <text x="654" y="210" class="name" opacity=".28">Иван</text>
+  <path d="M780 225h12M786 225v87M780 312h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
+  <text x="802" y="270" class="measure">1.15em</text>
+  <text x="578" y="326" fill="#65c889" font-family="Inter, Arial, sans-serif" font-size="12">Линия укорочена, плашка не сдвинута</text>
   <text x="578" y="370" class="note">Без плашки</text>
   <rect x="676" y="350" width="2" height="92" fill="#e0262d"/>
-  <path d="M780 350h12M786 350v92M780 442h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
-  <text x="802" y="400" class="measure">92 px</text>
+  <circle cx="677" cy="350" r="7" fill="#e0262d"/>
+  <path d="M780 355h12M786 355v87M780 442h12" fill="none" stroke="#8993a5" stroke-width="1.5"/>
+  <text x="802" y="400" class="measure">1.15em</text>
 </svg>
