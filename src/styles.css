@@ -165,6 +165,10 @@ button:disabled { cursor: not-allowed; opacity: .6; }
   font: 600 11px/1.2 Inter, sans-serif !important; color: white !important; text-overflow: ellipsis;
   pointer-events: none; transform: translateY(calc(-3px + var(--remote-label-offset, 0px)));
 }
+.remote-cursor-names .cm-ySelectionCaret { border-left-color: transparent !important; }
+.remote-cursor-names .cm-ySelectionCaret::after {
+  content: ""; position: absolute; top: .2em; bottom: 0; left: -2px; width: 2px; background-color: inherit;
+}
 .remote-cursor-names .cm-ySelectionCaretDot { display: none; }
 .remote-cursor-names .cm-ySelectionInfo { opacity: 1 !important; transition: opacity 140ms ease-out; }
 .remote-cursor-label-group-hover > .cm-ySelectionCaretDot { transform-origin: bottom center; transform: scale(0); }
